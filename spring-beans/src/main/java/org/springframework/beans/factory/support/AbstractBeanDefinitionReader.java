@@ -16,13 +16,8 @@
 
 package org.springframework.beans.factory.support;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
@@ -33,6 +28,10 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Abstract base class for bean definition readers which implement
@@ -207,7 +206,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
-		ResourceLoader resourceLoader = getResourceLoader();
+		ResourceLoader resourceLoader = getResourceLoader(); // 本身，用来读...的
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
 					"Cannot load bean definitions from location [" + location + "]: no ResourceLoader available");
@@ -216,7 +215,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		if (resourceLoader instanceof ResourcePatternResolver resourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
-				Resource[] resources = resourcePatternResolver.getResources(location);
+				Resource[] resources = resourcePatternResolver.getResources(location); // 转换成Resource表示的配置
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
