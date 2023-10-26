@@ -244,6 +244,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object beanInstance; // 要返回的结果
 
 		// Eagerly check singleton cache for manually registered singletons.
+		// 是不是在这一步实例化?构造器注入实例化不是在这
 		Object sharedInstance = getSingleton(beanName); // 如果是单例的话,应该是只用实例化一次
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
@@ -292,6 +293,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 			StartupStep beanCreation = this.applicationStartup.start("spring.beans.instantiate")
 					.tag("beanName", name);
+			// 此处还有一个实例化逻辑
 			try {
 				if (requiredType != null) {
 					beanCreation.tag("beanType", requiredType::toString);
@@ -319,6 +321,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// Create bean instance.
+				// 单例逻辑
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
@@ -335,7 +338,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					});
 					beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
-
+				// 原型逻辑
 				else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
@@ -348,7 +351,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
-
+				// 普通场景或异常?
 				else {
 					String scopeName = mbd.getScope();
 					if (!StringUtils.hasLength(scopeName)) {
